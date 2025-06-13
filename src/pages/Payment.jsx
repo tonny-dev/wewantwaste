@@ -940,7 +940,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
                   <button
                     type="button"
                     onClick={() => setPaymentMethod("googlepay")}
-                    disabled={!googlePayReady}
+                    // disabled={!googlePayReady}
                     className={`p-4 rounded-2xl border-2 transition-all ${
                       paymentMethod === "googlepay"
                         ? "border-blue-500 bg-blue-50"
