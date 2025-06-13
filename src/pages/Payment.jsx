@@ -1027,7 +1027,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
                               e.target.value,
                             )
                           }
-                          className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                          className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-800 focus:outline-none focus:border-blue-500"
                         >
                           <option value="United Kingdom">United Kingdom</option>
                           <option value="Kenya">Kenya</option>
@@ -1047,7 +1047,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
                         onChange={(e) => setSaveCard(e.target.checked)}
                         className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
                       />
-                      <span className="ml-2 text-sm text-gray-300">
+                      <span className="ml-2 text-sm text-gray-800">
                         Save this card for future purchases
                       </span>
                     </label>
@@ -1057,41 +1057,41 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
 
               {paymentMethod === "googlepay" && (
                 <div className="mb-8">
-                  <div className="p-8 bg-gray-700 rounded-lg text-center">
+                  <div className="p-8 bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200 rounded-2xl text-center">
                     <div className="mb-6">
-                      <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
+                      <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4 shadow-lg">
                         <svg
-                          className="w-8 h-8"
+                          className="w-8 h-8 text-white"
                           viewBox="0 0 24 24"
                           fill="currentColor"
                         >
                           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                         </svg>
                       </div>
-                      <h3 className="text-xl font-semibold text-white mb-2">
+                      <h3 className="text-xl font-semibold text-gray-800 mb-2">
                         Google Pay
                       </h3>
-                      <p className="text-gray-300">
+                      <p className="text-gray-600">
                         Quick and secure payment with Google Pay
                       </p>
                     </div>
 
-                    <div className="bg-gray-800 p-4 rounded-lg mb-6">
-                      <div className="flex items-center justify-between text-sm text-gray-300 mb-2">
+                    <div className="bg-white border border-gray-200 p-4 rounded-xl mb-6 shadow-sm">
+                      <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
                         <span>Total Amount:</span>
-                        <span className="font-semibold text-white">
+                        <span className="font-semibold text-gray-800">
                           £{total.toFixed(2)}
                         </span>
                       </div>
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-gray-500">
                         You'll be redirected to Google Pay to complete your
                         payment securely
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-center space-x-2 text-sm text-gray-400">
+                    <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
                       <svg
-                        className="w-4 h-4"
+                        className="w-4 h-4 text-green-600"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -1111,7 +1111,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
               <div className="mb-6 p-4 bg-gray-700 rounded-lg">
                 <div className="flex items-start space-x-3">
                   <svg
-                    className="w-5 h-5 text-green-400 mt-0.5"
+                    className="w-5 h-5 text-blue-600 mt-0.5"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -1122,10 +1122,10 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
                     />
                   </svg>
                   <div>
-                    <h4 className="font-semibold text-green-400 mb-1">
+                    <h4 className="font-semibold text-blue-600 mb-1">
                       Secure Payment
                     </h4>
-                    <p className="text-sm text-gray-300">
+                    <p className="text-sm text-gray-800">
                       Your payment information is encrypted and processed
                       securely. We never store your card details.
                     </p>
@@ -1135,7 +1135,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
 
               {/* Terms and Privacy */}
               <div className="mb-6 p-4 bg-gray-700 rounded-lg">
-                <p className="text-sm text-gray-300">
+                <p className="text-sm text-gray-800">
                   By completing this purchase, you agree to our{" "}
                   <a href="#" className="text-blue-400 hover:underline">
                     Terms of Service
