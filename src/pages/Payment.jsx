@@ -559,8 +559,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
     } catch (error) {
       console.error("Payment processing error:", error);
       setErrors({
-        general:
-          error.message || "Payment processing failed. Please try again.",
+        general: "Payment processing failed. Please try again.",
       });
     } finally {
       setProcessing(false);
