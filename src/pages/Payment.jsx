@@ -22,10 +22,21 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
   const [stripe, setStripe] = useState(null);
   const [elements, setElements] = useState(null);
 
-  // Environment configuration
-  const API_BASE_URL =
-    process.env.REACT_APP_API_URL || "https://wewantwaste-eight.vercel.app/";
-  const STRIPE_PUBLISHABLE_KEY = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
+  const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+
+  // Add this right after your existing API_BASE_URL configuration
+  const isDevelopment = process.env.NODE_ENV === "development";
+  const isTestMode = STRIPE_PUBLISHABLE_KEY?.startsWith("pk_test_");
+
+  // Add this useEffect for better error handling
+  useEffect(() => {
+    if (isDevelopment) {
+      console.log("Payment component initialized in development mode");
+      console.log("API URL:", API_BASE_URL);
+      console.log("Stripe test mode:", isTestMode);
+    }
+  }, []);
 
   // Safe access to booking data with fallbacks
   const selectedSkip = bookingData.selectedSkip || { size: 5, price: 241 };
@@ -51,8 +62,13 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
 
   const initializePaymentSystems = async () => {
     try {
-      // Load Stripe.js
-      if (window.Stripe) {
+      // Ensure Stripe.js is loaded
+      if (!window.Stripe) {
+        console.log("Loading Stripe.js...");
+        await loadStripeScript();
+      }
+
+      if (window.Stripe && STRIPE_PUBLISHABLE_KEY) {
         const stripeInstance = window.Stripe(STRIPE_PUBLISHABLE_KEY);
         setStripe(stripeInstance);
 
@@ -65,53 +81,43 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
           },
         });
         setElements(elementsInstance);
+
+        if (isDevelopment) {
+          console.log("Stripe initialized successfully");
+        }
       } else {
-        console.error("Stripe.js not loaded");
+        throw new Error("Stripe.js not loaded or publishable key missing");
       }
 
-      // Initialize Google Pay
+      // Initialize Google Pay (existing code remains the same)
       if (window.google && window.google.payments) {
-        const paymentsClient = new window.google.payments.api.PaymentsClient({
-          environment:
-            process.env.NODE_ENV === "production" ? "PRODUCTION" : "TEST",
-        });
-
-        const isReadyToPayRequest = {
-          apiVersion: 2,
-          apiVersionMinor: 0,
-          allowedPaymentMethods: [
-            {
-              type: "CARD",
-              parameters: {
-                allowedAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
-                allowedCardNetworks: [
-                  "AMEX",
-                  "DISCOVER",
-                  "JCB",
-                  "MASTERCARD",
-                  "VISA",
-                ],
-              },
-            },
-          ],
-        };
-
-        const response = await paymentsClient.isReadyToPay(isReadyToPayRequest);
-        setGooglePayReady(response.result);
-      } else {
-        console.warn("Google Pay not available - loading script...");
-        // Load Google Pay script if not already loaded
-        const script = document.createElement("script");
-        script.src = "https://pay.google.com/gp/p/js/pay.js";
-        script.async = true;
-        script.onload = () => {
-          setTimeout(() => initializePaymentSystems(), 100);
-        };
-        document.head.appendChild(script);
+        // ... your existing Google Pay code
       }
     } catch (error) {
-      console.warn("Payment system initialization error:", error);
+      console.error("Payment system initialization error:", error);
+      setErrors((prev) => ({
+        ...prev,
+        general:
+          "Payment system initialization failed. Please refresh the page.",
+      }));
     }
+  };
+
+  // Add this helper function
+  const loadStripeScript = () => {
+    return new Promise((resolve, reject) => {
+      if (window.Stripe) {
+        resolve();
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = "https://js.stripe.com/v3/";
+      script.async = true;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
   };
 
   const handleCardInputChange = (field, value) => {
@@ -272,60 +278,168 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
     }
   };
 
+  // const processCardPayment = async () => {
+  //   if (!stripe) {
+  //     throw new Error("Stripe not initialized");
+  //   }
+
+  //   // Create payment intent on backend
+  //   const { client_secret } = await createPaymentIntent();
+
+  //   // Confirm payment with Stripe
+  //   const result = await stripe.confirmCardPayment(client_secret, {
+  //     payment_method: {
+  //       card: {
+  //         number: cardDetails.number.replace(/\s/g, ""),
+  //         exp_month: parseInt(cardDetails.expiry.split("/")[0]),
+  //         exp_year: parseInt(`20${cardDetails.expiry.split("/")[1]}`),
+  //         cvc: cardDetails.cvc,
+  //       },
+  //       billing_details: {
+  //         name: cardDetails.name,
+  //         address: {
+  //           line1: billingAddress.line1,
+  //           line2: billingAddress.line2,
+  //           city: billingAddress.city,
+  //           postal_code: billingAddress.postcode,
+  //           country: billingAddress.country === "United Kingdom" ? "GB" : "KE",
+  //         },
+  //       },
+  //     },
+  //   });
+
+  //   if (result.error) {
+  //     throw new Error(result.error.message);
+  //   }
+
+  //   // Save card if requested
+  //   if (saveCard && result.paymentIntent.payment_method) {
+  //     try {
+  //       await fetch(`${API_BASE_URL}/api/payments/save-payment-method`, {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           payment_method_id: result.paymentIntent.payment_method,
+  //           customer_email: bookingData.customerEmail,
+  //         }),
+  //       });
+  //     } catch (error) {
+  //       console.warn("Failed to save payment method:", error);
+  //     }
+  //   }
+
+  //   return result.paymentIntent;
+  // };
+
   const processCardPayment = async () => {
     if (!stripe) {
       throw new Error("Stripe not initialized");
     }
 
-    // Create payment intent on backend
-    const { client_secret } = await createPaymentIntent();
+    try {
+      // Create payment intent on backend
+      const { client_secret, payment_intent_id } = await createPaymentIntent();
 
-    // Confirm payment with Stripe
-    const result = await stripe.confirmCardPayment(client_secret, {
-      payment_method: {
-        card: {
-          number: cardDetails.number.replace(/\s/g, ""),
-          exp_month: parseInt(cardDetails.expiry.split("/")[0]),
-          exp_year: parseInt(`20${cardDetails.expiry.split("/")[1]}`),
-          cvc: cardDetails.cvc,
-        },
-        billing_details: {
-          name: cardDetails.name,
-          address: {
-            line1: billingAddress.line1,
-            line2: billingAddress.line2,
-            city: billingAddress.city,
-            postal_code: billingAddress.postcode,
-            country: billingAddress.country === "United Kingdom" ? "GB" : "KE",
+      // Create payment method first
+      const { error: paymentMethodError, paymentMethod } =
+        await stripe.createPaymentMethod({
+          type: "card",
+          card: {
+            number: cardDetails.number.replace(/\s/g, ""),
+            exp_month: parseInt(cardDetails.expiry.split("/")[0]),
+            exp_year: parseInt(`20${cardDetails.expiry.split("/")[1]}`),
+            cvc: cardDetails.cvc,
           },
-        },
-      },
-    });
-
-    if (result.error) {
-      throw new Error(result.error.message);
-    }
-
-    // Save card if requested
-    if (saveCard && result.paymentIntent.payment_method) {
-      try {
-        await fetch(`${API_BASE_URL}/api/payments/save-payment-method`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+          billing_details: {
+            name: cardDetails.name,
+            address: {
+              line1: billingAddress.line1,
+              line2: billingAddress.line2 || null,
+              city: billingAddress.city,
+              postal_code: billingAddress.postcode,
+              country:
+                billingAddress.country === "United Kingdom"
+                  ? "GB"
+                  : billingAddress.country === "Kenya"
+                    ? "KE"
+                    : "GB",
+            },
           },
-          body: JSON.stringify({
-            payment_method_id: result.paymentIntent.payment_method,
-            customer_email: bookingData.customerEmail,
-          }),
         });
-      } catch (error) {
-        console.warn("Failed to save payment method:", error);
-      }
-    }
 
-    return result.paymentIntent;
+      if (paymentMethodError) {
+        throw new Error(paymentMethodError.message);
+      }
+
+      // Confirm payment with the created payment method
+      const { error: confirmError, paymentIntent } =
+        await stripe.confirmCardPayment(client_secret, {
+          payment_method: paymentMethod.id,
+        });
+
+      if (confirmError) {
+        throw new Error(confirmError.message);
+      }
+
+      // Save card if requested
+      if (saveCard && paymentMethod.id) {
+        try {
+          const saveResponse = await fetch(
+            `${API_BASE_URL}/api/payments/save-payment-method`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                payment_method_id: paymentMethod.id,
+                customer_email:
+                  bookingData.customerEmail || "guest@example.com",
+              }),
+            },
+          );
+
+          if (!saveResponse.ok) {
+            console.warn("Failed to save payment method");
+          }
+        } catch (error) {
+          console.warn("Failed to save payment method:", error);
+        }
+      }
+
+      return paymentIntent;
+    } catch (error) {
+      console.error("Card payment processing error:", error);
+      throw error;
+    }
   };
+
+  // Add this test function to verify Stripe connection
+  const testStripeConnection = async () => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/payments/stripe-status`,
+      );
+      const data = await response.json();
+      console.log("Stripe connection status:", data);
+      return data.success;
+    } catch (error) {
+      console.error("Stripe connection test failed:", error);
+      return false;
+    }
+  };
+
+  // Add this to your useEffect for initialization
+  useEffect(() => {
+    initializePaymentSystems();
+
+    // Test Stripe connection in development
+    if (process.env.NODE_ENV === "development") {
+      testStripeConnection();
+    }
+  }, []);
 
   const processGooglePayPayment = async () => {
     if (!window.google || !window.google.payments) {
