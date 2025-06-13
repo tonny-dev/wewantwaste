@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Stripe = require("stripe");
 
-// Initialize Stripe with your secret key
+// Initialize Stripe with secret key
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Create Payment Intent endpoint
@@ -33,14 +33,13 @@ router.post("/create-payment-intent", async (req, res) => {
 
     // Create payment intent
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount), // Ensure it's an integer
+      amount: Math.round(amount),
       currency: currency.toLowerCase(),
       automatic_payment_methods: {
         enabled: true,
       },
       metadata: {
         ...metadata,
-        // Add additional metadata for tracking
         environment: process.env.NODE_ENV || "development",
         created_at: new Date().toISOString(),
       },
@@ -114,7 +113,7 @@ router.post("/save-payment-method", async (req, res) => {
   }
 });
 
-// Webhook endpoint for handling Stripe events (optional but recommended)
+// Webhook endpoint for handling Stripe events
 router.post(
   "/webhook",
   express.raw({ type: "application/json" }),
@@ -160,7 +159,7 @@ router.get("/test", async (req, res) => {
   try {
     // Try to create a test payment intent with minimum amount
     const testIntent = await stripe.paymentIntents.create({
-      amount: 100, // £1.00 in pence
+      amount: 100,
       currency: "gbp",
       metadata: {
         test: "connection_test",
