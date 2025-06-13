@@ -55,11 +55,11 @@ const DateSelection = ({
         currentMonth.getFullYear() === earliestDate.getFullYear()
       ) {
         // Auto-select if in current view
-        setSelectedDate(earliestDate);
-        // Calculate collection date (14 days later)
-        const collection = new Date(earliestDate);
-        collection.setDate(collection.getDate() + 14);
-        setCollectionDate(collection);
+        // setSelectedDate(earliestDate);
+        // // Calculate collection date (14 days later)
+        // const collection = new Date(earliestDate);
+        // collection.setDate(collection.getDate() + 14);
+        // setCollectionDate(collection);
       }
     }
   };
@@ -177,9 +177,6 @@ const DateSelection = ({
                       You've selected to place your skip on a public road, which
                       requires a council permit. The council needs 5 working
                       days to process permit applications.
-                    </p>
-                    <p className="text-blue-600 font-semibold text-lg">
-                      The earliest available date is Friday 20 June.
                     </p>
                   </div>
                 </div>
