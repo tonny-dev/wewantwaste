@@ -8,7 +8,11 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 // Create Payment Intent endpoint
 router.post("/create-payment-intent", async (req, res) => {
   try {
-    console.log("Creating payment intent with data:", req.body);
+    console.log("Received payment intent request:", {
+      body: req.body,
+      headers: req.headers,
+      url: req.url,
+    });
 
     const {
       amount,
@@ -18,9 +22,13 @@ router.post("/create-payment-intent", async (req, res) => {
       billing_address,
     } = req.body;
 
-    // Validate required fields
-    if (!amount || amount <= 0) {
-      return res.status(400).json({ error: "Invalid amount provided" });
+    if (!amount || typeof amount !== "number" || amount <= 0) {
+      console.error("Invalid amount:", amount);
+      return res.status(400).json({
+        error: "Invalid amount provided",
+        received: amount,
+        type: typeof amount,
+      });
     }
 
     // Create payment intent

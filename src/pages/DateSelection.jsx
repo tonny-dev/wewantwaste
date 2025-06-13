@@ -55,6 +55,11 @@ const DateSelection = ({
         currentMonth.getFullYear() === earliestDate.getFullYear()
       ) {
         // Auto-select if in current view
+        setSelectedDate(earliestDate);
+        // Calculate collection date (14 days later)
+        const collection = new Date(earliestDate);
+        collection.setDate(collection.getDate() + 14);
+        setCollectionDate(collection);
       }
     }
   };

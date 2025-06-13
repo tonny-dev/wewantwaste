@@ -27,7 +27,7 @@ const PermitCheck = ({
   const getEarliestPermitDate = () => {
     const today = new Date();
     const earliestDate = new Date(today);
-    earliestDate.setDate(today.getDate() + 7); // 5 working days + 2 days buffer
+    earliestDate.setDate(today.getDate() + 7);
     return earliestDate;
   };
 

@@ -4,11 +4,10 @@ const router = express.Router();
 router.post("/create", async (req, res) => {
   try {
     const booking = {
-      id: Date.now().toString(), // Replace with DB logic
+      id: Date.now().toString(),
       ...req.body,
     };
 
-    // TODO: Save to a real database
     console.log("Booking created:", booking);
 
     res.json(booking);

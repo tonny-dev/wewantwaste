@@ -122,7 +122,7 @@ export default function PostcodeEntry({ onAddressSelected }) {
         details: editableAddress,
       });
 
-      setError(""); // Clear any previous errors
+      setError("");
     } catch (err) {
       console.error("Address validation error:", err);
       setError("Failed to validate address. Please check your postcode.");
@@ -141,7 +141,7 @@ export default function PostcodeEntry({ onAddressSelected }) {
       city: "",
       postcode: "",
     });
-    setError(""); // Clear errors when going back
+    setError("");
   };
 
   // Close suggestions when clicking outside
