@@ -173,7 +173,7 @@ function App() {
   // Render current step component
   const renderCurrentStep = () => {
     switch (currentStep) {
-      case 6:
+      case 1:
         return <PostcodeEntry onAddressSelected={handleAddressSelected} />;
 
       case 2:
@@ -216,7 +216,7 @@ function App() {
           />
         );
 
-      case 1:
+      case 6:
         return (
           <Payment
             onPaymentComplete={handlePaymentComplete}
