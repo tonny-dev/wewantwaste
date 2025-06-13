@@ -1,15 +1,3 @@
-Perfect — based on your setup, here’s a complete `README.md` for your **Wewantwaste** project, tailored to:
-
-* Stripe test mode
-* Custom payment flow
-* Express backend with `concurrently`
-* No `ngrok` (local development with CORS setup)
-
----
-
-### 🗂️ `README.md`
-
-````md
 # WeWantWaste 🗑️
 
 A full-stack skip hire platform with secure payments via Stripe (Test Mode). Users can book skips, view order summaries, and pay using card or Google Pay. Built with React (Vite), Node.js/Express, and Stripe API.
@@ -145,5 +133,3 @@ Let me know if you want to include:
 - Screenshots or demo GIFs
 - Deployment instructions (Netlify + Railway / Render)
 - Webhook testing setup with Stripe CLI
-
-```
