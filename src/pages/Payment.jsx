@@ -22,12 +22,21 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
   const [stripe, setStripe] = useState(null);
   const [elements, setElements] = useState(null);
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL;
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
   const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 
-  // Add this right after your existing API_BASE_URL configuration
-  const isDevelopment = process.env.NODE_ENV === "development";
+  const isDevelopment = import.meta.env.DEV;
   const isTestMode = STRIPE_PUBLISHABLE_KEY?.startsWith("pk_test_");
+
+  // Add debug logging
+  useEffect(() => {
+    console.log("API Configuration:", {
+      API_BASE_URL,
+      isDevelopment,
+      isTestMode,
+      hasStripeKey: !!STRIPE_PUBLISHABLE_KEY,
+    });
+  }, []);
 
   // Add this useEffect for better error handling
   useEffect(() => {
@@ -244,94 +253,61 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
 
   const createPaymentIntent = async () => {
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/payments/create-payment-intent`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            amount: total * 100, // Convert to pence
-            currency: "gbp",
-            booking_data: bookingData,
-            billing_address: billingAddress,
-            metadata: {
-              skip_size: selectedSkip.size,
-              delivery_address: `${address.line1}, ${address.postcode}`,
-              delivery_date: selectedDate,
-              permit_required: permitRequired.toString(),
-            },
-          }),
+      const apiUrl = `${API_BASE_URL}/api/payments/create-payment-intent`;
+      console.log("Making request to:", apiUrl);
+      console.log("Request payload:", {
+        amount: total * 100,
+        currency: "gbp",
+        booking_data: bookingData,
+        billing_address: billingAddress,
+      });
+
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          amount: total * 100,
+          currency: "gbp",
+          booking_data: bookingData,
+          billing_address: billingAddress,
+          metadata: {
+            skip_size: selectedSkip.size,
+            delivery_address: `${address.line1}, ${address.postcode}`,
+            delivery_date: selectedDate,
+            permit_required: permitRequired.toString(),
+          },
+        }),
+      });
+
+      console.log("Response status:", response.status);
+      console.log(
+        "Response headers:",
+        Object.fromEntries(response.headers.entries()),
       );
 
+      // Log the raw response text first
+      const responseText = await response.text();
+      console.log("Raw response:", responseText);
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP ${response.status}: ${responseText}`);
       }
 
-      const data = await response.json();
+      // Parse the response
+      const data = JSON.parse(responseText);
+      console.log("Parsed response data:", data);
       return data;
     } catch (error) {
-      console.error("Error creating payment intent:", error);
-      throw new Error("Failed to initialize payment. Please try again.");
+      console.error("Detailed error in createPaymentIntent:", {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+      });
+      throw error;
     }
   };
-
-  // const processCardPayment = async () => {
-  //   if (!stripe) {
-  //     throw new Error("Stripe not initialized");
-  //   }
-
-  //   // Create payment intent on backend
-  //   const { client_secret } = await createPaymentIntent();
-
-  //   // Confirm payment with Stripe
-  //   const result = await stripe.confirmCardPayment(client_secret, {
-  //     payment_method: {
-  //       card: {
-  //         number: cardDetails.number.replace(/\s/g, ""),
-  //         exp_month: parseInt(cardDetails.expiry.split("/")[0]),
-  //         exp_year: parseInt(`20${cardDetails.expiry.split("/")[1]}`),
-  //         cvc: cardDetails.cvc,
-  //       },
-  //       billing_details: {
-  //         name: cardDetails.name,
-  //         address: {
-  //           line1: billingAddress.line1,
-  //           line2: billingAddress.line2,
-  //           city: billingAddress.city,
-  //           postal_code: billingAddress.postcode,
-  //           country: billingAddress.country === "United Kingdom" ? "GB" : "KE",
-  //         },
-  //       },
-  //     },
-  //   });
-
-  //   if (result.error) {
-  //     throw new Error(result.error.message);
-  //   }
-
-  //   // Save card if requested
-  //   if (saveCard && result.paymentIntent.payment_method) {
-  //     try {
-  //       await fetch(`${API_BASE_URL}/api/payments/save-payment-method`, {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           payment_method_id: result.paymentIntent.payment_method,
-  //           customer_email: bookingData.customerEmail,
-  //         }),
-  //       });
-  //     } catch (error) {
-  //       console.warn("Failed to save payment method:", error);
-  //     }
-  //   }
-
-  //   return result.paymentIntent;
-  // };
 
   const processCardPayment = async () => {
     if (!stripe) {
