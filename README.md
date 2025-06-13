@@ -58,7 +58,7 @@ NODE_ENV=development
 Use `concurrently` to run both frontend and backend together:
 
 ```bash
-npm run dev
+yarn dev:all
 ```
 
 This will:
