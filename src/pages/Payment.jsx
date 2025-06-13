@@ -1108,10 +1108,10 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
               )}
 
               {/* Security Notice */}
-              <div className="mb-6 p-4 bg-gray-700 rounded-lg">
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-2xl">
                 <div className="flex items-start space-x-3">
                   <svg
-                    className="w-5 h-5 text-blue-600 mt-0.5"
+                    className="w-5 h-5 text-green-600 mt-0.5"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -1122,10 +1122,10 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
                     />
                   </svg>
                   <div>
-                    <h4 className="font-semibold text-blue-600 mb-1">
+                    <h4 className="font-semibold text-green-700 mb-1">
                       Secure Payment
                     </h4>
-                    <p className="text-sm text-gray-800">
+                    <p className="text-sm text-gray-700">
                       Your payment information is encrypted and processed
                       securely. We never store your card details.
                     </p>
@@ -1134,14 +1134,20 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
               </div>
 
               {/* Terms and Privacy */}
-              <div className="mb-6 p-4 bg-gray-700 rounded-lg">
-                <p className="text-sm text-gray-800">
+              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-2xl">
+                <p className="text-sm text-gray-700">
                   By completing this purchase, you agree to our{" "}
-                  <a href="#" className="text-blue-400 hover:underline">
+                  <a
+                    href="#"
+                    className="text-blue-600 hover:text-blue-800 hover:underline"
+                  >
                     Terms of Service
                   </a>{" "}
                   and{" "}
-                  <a href="#" className="text-blue-400 hover:underline">
+                  <a
+                    href="#"
+                    className="text-blue-600 hover:text-blue-800 hover:underline"
+                  >
                     Privacy Policy
                   </a>
                   . Your payment information is processed securely.
