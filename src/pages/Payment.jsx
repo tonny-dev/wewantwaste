@@ -1027,7 +1027,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
                               e.target.value,
                             )
                           }
-                          className="w-full p-3 bg-gray-300 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                          className="w-full p-3 bg-gray-100 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                         >
                           <option value="United Kingdom">United Kingdom</option>
                           <option value="Kenya">Kenya</option>
@@ -1045,7 +1045,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
                         type="checkbox"
                         checked={saveCard}
                         onChange={(e) => setSaveCard(e.target.checked)}
-                        className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-600 rounded focus:ring-blue-500"
                       />
                       <span className="ml-2 text-sm text-gray-300">
                         Save this card for future purchases
@@ -1057,7 +1057,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
 
               {paymentMethod === "googlepay" && (
                 <div className="mb-8">
-                  <div className="p-8 bg-gray-700 rounded-lg text-center">
+                  <div className="p-8 bg-gray-100 rounded-lg text-center">
                     <div className="mb-6">
                       <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
                         <svg
@@ -1108,7 +1108,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
               )}
 
               {/* Security Notice */}
-              <div className="mb-6 p-4 bg-gray-700 rounded-lg">
+              <div className="mb-6 p-4 bg-gray-100 rounded-lg">
                 <div className="flex items-start space-x-3">
                   <svg
                     className="w-5 h-5 text-green-400 mt-0.5"
@@ -1134,7 +1134,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
               </div>
 
               {/* Terms and Privacy */}
-              <div className="mb-6 p-4 bg-gray-700 rounded-lg">
+              <div className="mb-6 p-4 bg-gray-100 rounded-lg">
                 <p className="text-sm text-gray-300">
                   By completing this purchase, you agree to our{" "}
                   <a href="#" className="text-blue-400 hover:underline">
@@ -1154,7 +1154,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
                   type="button"
                   onClick={onBack}
                   disabled={processing}
-                  className="flex-1 px-6 py-3 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed"
+                  className="flex-1 px-6 py-3 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-100 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed"
                 >
                   Back
                 </button>
