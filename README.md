@@ -26,11 +26,10 @@ cd wewantwaste
 
 ```bash
 # Frontend (Vite)
-cd frontend
-npm install
+npm install/yarn install
 
 # Backend
-cd ../backend
+cd server
 npm install
 ```
 
