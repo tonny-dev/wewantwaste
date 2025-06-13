@@ -98,9 +98,104 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
         throw new Error("Stripe.js not loaded or publishable key missing");
       }
 
-      // Initialize Google Pay (existing code remains the same)
+      // Initialize Google Pay
       if (window.google && window.google.payments) {
-        // ... your existing Google Pay code
+        try {
+          const paymentsClient = new window.google.payments.api.PaymentsClient({
+            environment: isDevelopment ? "TEST" : "PRODUCTION",
+          });
+
+          const isReadyToPayRequest = {
+            apiVersion: 2,
+            apiVersionMinor: 0,
+            allowedPaymentMethods: [
+              {
+                type: "CARD",
+                parameters: {
+                  allowedAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
+                  allowedCardNetworks: [
+                    "AMEX",
+                    "DISCOVER",
+                    "JCB",
+                    "MASTERCARD",
+                    "VISA",
+                  ],
+                },
+                tokenizationSpecification: {
+                  type: "PAYMENT_GATEWAY",
+                  parameters: {
+                    gateway: "stripe",
+                    "stripe:version": "2020-08-27",
+                    "stripe:publishableKey": STRIPE_PUBLISHABLE_KEY,
+                  },
+                },
+              },
+            ],
+          };
+
+          const response =
+            await paymentsClient.isReadyToPay(isReadyToPayRequest);
+          if (response.result) {
+            setGooglePayReady(true);
+            if (isDevelopment) {
+              console.log("Google Pay initialized successfully");
+            }
+          }
+        } catch (error) {
+          console.warn("Google Pay initialization failed:", error);
+          setGooglePayReady(false);
+        }
+      } else {
+        // Load Google Pay API if not available
+        try {
+          await loadGooglePayScript();
+          if (window.google && window.google.payments) {
+            const paymentsClient =
+              new window.google.payments.api.PaymentsClient({
+                environment: isDevelopment ? "TEST" : "PRODUCTION",
+              });
+
+            const isReadyToPayRequest = {
+              apiVersion: 2,
+              apiVersionMinor: 0,
+              allowedPaymentMethods: [
+                {
+                  type: "CARD",
+                  parameters: {
+                    allowedAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
+                    allowedCardNetworks: [
+                      "AMEX",
+                      "DISCOVER",
+                      "JCB",
+                      "MASTERCARD",
+                      "VISA",
+                    ],
+                  },
+                  tokenizationSpecification: {
+                    type: "PAYMENT_GATEWAY",
+                    parameters: {
+                      gateway: "stripe",
+                      "stripe:version": "2020-08-27",
+                      "stripe:publishableKey": STRIPE_PUBLISHABLE_KEY,
+                    },
+                  },
+                },
+              ],
+            };
+
+            const response =
+              await paymentsClient.isReadyToPay(isReadyToPayRequest);
+            if (response.result) {
+              setGooglePayReady(true);
+              if (isDevelopment) {
+                console.log("Google Pay loaded and initialized successfully");
+              }
+            }
+          }
+        } catch (error) {
+          console.warn("Google Pay loading/initialization failed:", error);
+          setGooglePayReady(false);
+        }
       }
     } catch (error) {
       console.error("Payment system initialization error:", error);
@@ -315,7 +410,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
     }
 
     try {
-      // Create payment intent on backend
+      // Create payment intent on server
       const { client_secret, payment_intent_id } = await createPaymentIntent();
 
       // Create payment method first
@@ -392,7 +487,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
     }
   };
 
-  // Add this test function to verify Stripe connection
+  // test function to verify Stripe connection
   const testStripeConnection = async () => {
     try {
       const response = await fetch(
@@ -407,7 +502,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
     }
   };
 
-  // Add this to your useEffect for initialization
+  // initialization
   useEffect(() => {
     initializePaymentSystems();
 
@@ -471,7 +566,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
       const paymentData =
         await paymentsClient.loadPaymentData(paymentDataRequest);
 
-      // Create payment intent on backend
+      // Create payment intent on server
       const { client_secret } = await createPaymentIntent();
 
       // Confirm payment with Stripe using Google Pay token
@@ -517,7 +612,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
         paymentResult = await processGooglePayPayment();
       }
 
-      // Create booking record on backend
+      // Create booking record on server
       const bookingResponse = await fetch(
         `${API_BASE_URL}/api/bookings/create`,
         {
