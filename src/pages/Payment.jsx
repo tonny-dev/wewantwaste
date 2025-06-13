@@ -1027,7 +1027,7 @@ const Payment = ({ onPaymentComplete, bookingData = {}, onBack }) => {
                               e.target.value,
                             )
                           }
-                          className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                          className="w-full p-3 bg-gray-300 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                         >
                           <option value="United Kingdom">United Kingdom</option>
                           <option value="Kenya">Kenya</option>
